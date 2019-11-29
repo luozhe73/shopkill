@@ -13,7 +13,7 @@ public class RedisPoolFactory {
     RedisConfig redisConfig;
 
     @Bean
-    public JedisPool JedisFactory() {
+    public JedisPool jedisFactory() {
         JedisPoolConfig poolConfig = new JedisPoolConfig();
         poolConfig.setMaxIdle(redisConfig.getPoolMaxdle());
         poolConfig.setMaxTotal(redisConfig.getPoolMaxTotal());

@@ -2,6 +2,7 @@ package com.cvicse.shopkill.controller;
 
 import com.cvicse.shopkill.domain.User;
 import com.cvicse.shopkill.redis.RedisService;
+import com.cvicse.shopkill.redis.UserKey;
 import com.cvicse.shopkill.result.Result;
 import com.cvicse.shopkill.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,7 @@ public class SampleController {
     @ResponseBody
     public Result<Long> redisGet(){
 
-        Long v1 = redisService.get("key1",Long.class);
+        Long v1 = redisService.get(UserKey.getById,"key1",Long.class);
         return Result.success(v1);
     }
 
@@ -38,7 +39,7 @@ public class SampleController {
     @ResponseBody
     public Result<Boolean> redisSet(){
 
-        boolean flag = redisService.set("key1",123L);
+        boolean flag = redisService.set(UserKey.getById,"key1",123L);
         return Result.success(flag);
     }
 }
