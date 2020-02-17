@@ -68,11 +68,18 @@ public class GoodsController {
         return html;
     }
 
-    @RequestMapping("/to_detail/{goodsId}")
-    public String detail(Model model, MiaoshaUser user, @PathVariable("goodsId") long goodsId) {
+    @RequestMapping(value = "/to_detail/{goodsId}", produces = "text/html")
+    @ResponseBody
+    public String detail(HttpServletRequest httpServletRequest, HttpServletResponse response,Model model, MiaoshaUser user, @PathVariable("goodsId") long goodsId) {
 
         //snowFlake
         model.addAttribute("user", user);
+
+        //取缓存
+        String html = redisService.get(GoodsKey.getGoodsDetail, ""+goodsId, String.class);
+        if(!StringUtils.isEmpty(html)) {
+            return html;
+        }
 
         GoodsVo goods = goodsService.getGoodsVoByGoodsId(goodsId);
         model.addAttribute("goods", goods);
@@ -103,7 +110,15 @@ public class GoodsController {
         model.addAttribute("miaoshaStatus", miaoshaStatus);
 
         model.addAttribute("remainSeconds", remainSeconds);
-        return "goods_detail";
+
+        WebContext ctx = new WebContext(httpServletRequest, response,
+                httpServletRequest.getServletContext(), httpServletRequest.getLocale(), model.asMap());
+        //手动渲染
+        html = thymeleafViewResolver.getTemplateEngine().process("goods_detail", ctx);
+        if(!StringUtils.isEmpty(html)) {
+            redisService.set(GoodsKey.getGoodsDetail, ""+goodsId, html);
+        }
+        return html;
     }
 
 }
